@@ -46,7 +46,7 @@
 					}
 				}
 			],
-			"logLevel": "debug",
+			"logLevel": "warning",
 			"read": {
 				"fields": [
 					"businessCriticality"
