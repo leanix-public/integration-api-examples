@@ -85,7 +85,7 @@
 					},
 					"values": [
 						{
-							"expr": "${variables[integration.valueOfForEach.concat('_processValuesCriticality')].count() == 0 ? '' : customFields.criticality_map[variables[integration.valueOfForEach.concat('_processValuesCriticality')].getNumbers().max()]}"
+							"expr": "${variables[integration.valueOfForEach.concat('_processValuesCriticality')].count() == 0 ? '' : customFields.criticality_map[helper:getFromMap(variables,integration.valueOfForEach.concat('_processValuesCriticality')).getNumbers().max()]}"
 						}
 					]
 				}
