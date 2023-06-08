@@ -6,7 +6,7 @@ Various Steps to follow:-
 
 1. Choose the example of your choice.
 
-2. Check the config.json file and use the attributes provided to create a Connector under Integration API: https://<customerdomain>/<workspacename>/admin/integration-api
+2. Check the config.json file and use the attributes provided to create a Connector under Integration API: https:// CUSTOMERDOMAIN / WORKSPACENAME /admin/integration-api
     Instructions are also available here: https://docs-eam.leanix.net/reference/rest-api#create-a-processor
 
 3. Copy the connector.json on the left side.
