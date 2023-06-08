@@ -1,0 +1,109 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "1. Read relations Process to Application",
+			"processorDescription": "Read the relationship and add attributes to variables",
+			"type": "Process",
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"Process"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							},
+							{
+								"keys": [
+									"__missing__"
+								],
+								"facetKey": "relProcessToApplication",
+								"operator": "NOR"
+							}
+						]
+					}
+				}
+			},
+			"run": 0,
+			"updates": [],
+			"variables": [
+				{
+					"key": "${integration.variables.valueOfForEach.target.id}_processValuesCriticality",
+					"value": "${lx.toOrdinal('businessCriticality')}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				},
+                {
+					"key": "ApplicationIds",
+					"value": "${integration.variables.valueOfForEach.target.id}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				}
+			],
+			"logLevel": "debug",
+			"read": {
+				"fields": [
+					"businessCriticality"
+				],
+				"noNullForOrdinal": false,
+				"relations": {
+					"filter": [
+						"relProcessToApplication"
+					],
+					"fields": [],
+					"targetFields": [
+						"businessCriticality"
+					]
+				}
+			},
+			"readOnly": true
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "2. Write attributes to Applications",
+			"processorDescription": "Read the applications and then apply the variables read above to the Applications",
+			"type": "Application",
+            "filter": {
+                "advanced": "${integration.contentIndex==0}"
+            },
+			"identifier": {
+				"internal": "${integration.valueOfForEach}"
+			
+			},
+			"run": 1,
+			"forEach":"${variables.ApplicationIds.distinct()}",
+			"updates": [
+				{
+					"key": {
+						"expr": "businessCriticality"
+					},
+					"values": [
+						{
+							"expr": "${variables[integration.valueOfForEach.concat('_processValuesCriticality')].count() == 0 ? '' : customFields.criticality_map[variables[integration.valueOfForEach.concat('_processValuesCriticality')].getNumbers().max()]}"
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"logLevel": "warning"
+		}
+	],
+	"variables": {},
+	"credentials": {
+		"useTechnicalUser": true
+	},
+	"customFields": {
+		"criticality_map": {
+			"0": "administrativeService",
+			"1": "businessOperational",
+			"2": "businessCritical",
+			"3": "missionCritical"
+		}
+	}
+}

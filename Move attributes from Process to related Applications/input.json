@@ -1,0 +1,17 @@
+{
+	"connectorType": "CopyAttributes",
+	"connectorId": "CopyAttributes",
+	"connectorVersion": "1.0",
+	"lxVersion": "1.0.0",
+	"description": "",
+	"processingDirection": "inbound",
+	"processingMode": "partial",
+	"customFields": {},
+	"content": [
+		{
+			"type": "",
+			"id": "",
+			"data": {}
+		}
+	]
+}
