@@ -1,0 +1,69 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "Read and Update Application Lifecycle on the basis of an attribute",
+			"processorDescription": "",
+			"type": "Application",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"search": {
+					"scope": {
+						"facetFilters": [
+							{
+								"facetKey": "FactSheetTypes",
+								"operator": "OR",
+								"keys": [
+									"Application"
+								]
+							}
+						],
+						"ids": []
+					}
+				}
+			},
+			"run": 0,
+			"updates": [
+				{
+					"key": {
+						"expr": "lifecycle.active"
+					},
+					"values": [
+						{
+							"expr": "${empty lx.factsheet.lifecycle.active && lx.factsheet.approvalStatus == 'Approved' ? integration.now.toLocalDate() : lx.factsheet.lifecycle.active}"
+						}
+					]
+				}
+			],
+			"read": {
+				"fields": [
+					"lifecycle",
+					"approvalStatus"
+				]
+			},
+			"enabled": true,
+			"variables": [
+                {
+                    "key":"OutputValue",
+                    "value":"_${lx.factsheet.lifecycle.active}"
+                },
+                {
+                    "key":"OutputValue2",
+                    "value":"..${empty lx.factsheet.lifecycle.active && lx.factsheet.approvalStatus == 'Approved' ? integration.now.toLocalDate() : lx.factsheet.lifecycle.active}"
+                },
+                {
+                     "key":"OutputValue3",
+                    "value":"..${integration.now.toLocalDate()}"
+                
+                }
+            ],
+			"logLevel": "warning"
+		}
+	],
+	"variables": {},
+      "credentials": { 
+    "useTechnicalUser": true 
+  }
+}
