@@ -1,0 +1,311 @@
+{
+  "connectorType": "SmartsheetIntegration",
+  "connectorId": "lxSmartsheetInboundConnector",
+  "processingMode": "partial",
+  "connectorVersion": "1.0.0",
+  "processingDirection": "inbound",
+  "processors": [
+      {
+          "processorType": "inboundFactSheet",
+          "processorName": "Projects from Smartsheet",
+          "processorDescription": "Creates LeanIX Projects from Smartsheet workspaces",
+          "type": "Project",
+          "enabled": true,
+          "filter": {
+              "exactType": "Workspace"
+          },
+          "identifier": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "run": 0,
+          "updates": [
+              {
+                  "key": {
+                      "expr": "name"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.name}"
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      },
+      {
+          "processorType": "inboundFactSheet",
+          "processorName": "Projects from Smartsheet",
+          "processorDescription": "Creates LeanIX Projects from Smartsheet sheets",
+          "type": "Project",
+          "enabled": true,
+          "filter": {
+              "exactType": "Sheet"
+          },
+          "identifier": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "run": 0,
+          "updates": [
+              {
+                  "key": {
+                      "expr": "name"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.name}"
+                      }
+                  ]
+              },
+              {
+                  "key": {
+                      "expr": "lifecycle.active"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.createdAt}"
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      },
+      {
+          "processorType": "inboundFactSheet",
+          "processorName": "Projects from Smartsheet",
+          "processorDescription": "Creates LeanIX Projects from Smartsheet tasks",
+          "type": "Project",
+          "enabled": true,
+          "filter": {
+              "exactType": "Task"
+          },
+          "identifier": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "run": 0,
+          "updates": [
+              {
+                  "key": {
+                      "expr": "name"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.taskName}"
+                      }
+                  ]
+              },
+              {
+                  "key": {
+                      "expr": "lifecycle.active"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.createdAt}"
+                      }
+                  ]
+              },
+              {
+                  "key": {
+                      "expr": "lifecycle.endOfLife"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.dueDate}"
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      },
+      {
+          "processorType": "inboundSubscription",
+          "processorName": "Project subscriptions from Smartsheet",
+          "processorDescription": "Creates subscriptions",
+          "run": 1,
+          "filter": {
+              "exactType": "Task"
+          },
+          "identifier": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "updates": [
+              {
+                  "key": {
+                      "expr": "user"
+                  },
+                  "values": [
+                      {
+                          "expr": "${data.assignedTo}"
+                      }
+                  ]
+              },
+              {
+                  "key": {
+                      "expr": "subscriptionType"
+                  },
+                  "values": [
+                      {
+                          "expr": "RESPONSIBLE"
+                      }
+                  ]
+              }
+          ]
+      },
+      {
+          "processorType": "inboundRelation",
+          "processorName": "Projects workspace relationship from Smartsheet",
+          "processorDescription": "Creates LeanIX relations between the Smartsheet sheet and workspace",
+          "run": 2,
+          "type": "relToParent",
+          "filter": {
+              "exactType": "Sheet"
+          },
+          "from": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "to": {
+              "external": {
+                  "id": {
+                      "expr": "${data.parentId}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "updates": [
+              {
+                  "key": {
+                      "expr": "description"
+                  },
+                  "values": [
+                      {
+                          "expr": "Relationship between sheet and workspace."
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      },
+      {
+          "processorType": "inboundRelation",
+          "processorName": "Project sheet relationships from Smartsheet",
+          "processorDescription": "Creates LeanIX relations between the Smartsheet task and sheet",
+          "run": 3,
+          "type": "relToParent",
+          "filter": {
+              "exactType": "Task"
+          },
+          "from": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "to": {
+              "external": {
+                  "id": {
+                      "expr": "${data.projectId}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "updates": [
+              {
+                  "key": {
+                      "expr": "description"
+                  },
+                  "values": [
+                      {
+                          "expr": "Relationship between sheet and workspace."
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      },
+      {
+          "processorType": "inboundRelation",
+          "processorName": "Project task relationships from Smartsheet",
+          "processorDescription": "Creates LeanIX relations between the Smartsheet task and subtask",
+          "run": 4,
+          "type": "relToParent",
+          "filter": {
+              "exactType": "Task"
+          },
+          "from": {
+              "external": {
+                  "id": {
+                      "expr": "${content.id}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "to": {
+              "external": {
+                  "id": {
+                      "expr": "${data.parentId}"
+                  },
+                  "type": {
+                      "expr": "externalId"
+                  }
+              }
+          },
+          "updates": [
+              {
+                  "key": {
+                      "expr": "description"
+                  },
+                  "values": [
+                      {
+                          "expr": "Relationship between sheet and workspace."
+                      }
+                  ]
+              }
+          ],
+          "logLevel": "warning"
+      }
+  ]
+}

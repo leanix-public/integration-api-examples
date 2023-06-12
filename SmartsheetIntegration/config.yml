@@ -1,0 +1,7 @@
+field_mapper:
+    "Due Date": "dueDate"
+    "Task Name": "taskName"
+    "Assigned To": "assignedTo"
+auth_url: "https://demo-us.leanix.net/services/mtm/v1/oauth2/token"
+request_url: "https://demo-us.leanix.net/services/integration-api/v1/"
+set_log_level: "INFO"
