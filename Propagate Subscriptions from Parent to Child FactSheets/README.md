@@ -3,8 +3,7 @@
 This connector syncs subscriptions from a parent factsheet to it’s associated children.
 
 # Connector steps:
-* Read relations Process to Application
+1. Copy Subscriptions of Parents to variables
     Read the relationship and add attributes to variables
-    Also collect the ApplicationsIds into a variable where the update should be made.
-* Write attributes to Applications
-    Apply the variables read above to the ApplicationsIds
+2. Flatten Subscriptions to Children
+3. Write subscriptions from variables to the child Factsheets
