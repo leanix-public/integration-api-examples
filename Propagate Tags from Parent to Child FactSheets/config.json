@@ -1,0 +1,164 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "Read Parent Capability Tags and Children Capability Type",
+			"processorDescription": "Copy Parent Capability Tags and Children Capability Type to variables, excluding L0 Platform Type",
+			"type": "BusinessCapability",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${content.id}"
+			},
+			"run": 0,
+			"variables": [
+				{
+					"key": "collectedChild_${integration.variables.valueOfForEach.target.id}",
+					"value": "${integration.toJson(lx.tags)}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				},
+				{
+					"key": "collectedTags",
+					"value": "${lx.factsheet.id}_${integration.variables.indexOfForEach}_${integration.toJson(lx.relations)}",
+					"forEach": {
+						"elementOf": "${lx.tags}",
+						"filter": "${integration.variables.valueOfForEach.name != 'L0 Platform Group'}"
+					}
+				}
+			],
+			"read": {
+				"relations": {
+					"filter": [
+						"relToChild"
+					],
+					"targetFields": [
+						"capabilityType"
+					]
+				},
+				"tags": {
+					"groups": [
+						"Capability Hierarchy"
+					]
+				}
+			},
+			"readOnly": true
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "Flatten Tags to Children",
+			"processorDescription": "We take the var collectedTags and create a new var while flattening the child relation object still inside each value to have one flat list of all tags for all children",
+			"type": "Business Capability",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"run": 1,
+			"forEach": "${variables.collectedTags}",
+			"variables": [
+				{
+					"key": "collectedChildren",
+					"value": "${integration.variables.valueOfForEach.target.id}_${integration.valueOfForEach.split('_')[1]}",
+					"forEach": {
+						"elementOf": "${integration.toObject(integration.valueOfForEach.split('_')[2])}",
+						"filter": "${integration.variables.valueOfForEach.target.capabilityType.matches('capability')}"
+					}
+				},
+				{
+					"key": "collectedChildrenGroups",
+					"value": "${integration.variables.valueOfForEach.target.id}_${integration.valueOfForEach.split('_')[1]}",
+					"forEach": {
+						"elementOf": "${integration.toObject(integration.valueOfForEach.split('_')[2])}",
+						"filter": "${integration.variables.valueOfForEach.target.capabilityType.matches('capabilityGroup')}"
+					}
+				}
+			],
+			"readOnly": true
+		},
+		{
+			"processorType": "inboundTag",
+			"processorName": "Write Tags from variables for Capabilities",
+			"processorDescription": "Iterate over variables and create children Tags, mapped for Capabilities",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"run": 2,
+			"updates": [
+				{
+					"key": {
+						"expr": "group.name"
+					},
+					"values": [
+						{
+							"expr": "Capability Hierarchy"
+						}
+					]
+				},
+				{
+					"key": {
+						"expr": "name"
+					},
+					"values": [
+						{
+							"expr": "${customFields.hierachyMap[integration.toObject(variables['collectedChild_'.concat(integration.valueOfForEach.split('_')[0])].get())[integration.valueOfForEach.split('_')[1]].name]}"
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"forEach": "${variables.collectedChildren}"
+		},
+		{
+			"processorType": "inboundTag",
+			"processorName": "Write Tags from variables for Capabilities",
+			"processorDescription": "Iterate over variables and create children Tags, mapped for Capability Groups",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"run": 2,
+			"updates": [
+				{
+					"key": {
+						"expr": "group.name"
+					},
+					"values": [
+						{
+							"expr": "Capability Hierarchy"
+						}
+					]
+				},
+				{
+					"key": {
+						"expr": "name"
+					},
+					"values": [
+						{
+							"expr": "${integration.toObject(variables['collectedChild_'.concat(integration.valueOfForEach.split('_')[0])].get())[integration.valueOfForEach.split('_')[1]].name}"
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"forEach": "${variables.collectedChildrenGroups}"
+		}
+	],
+	"customFields": {
+		"hierachyMap": {
+			"Level 1 Capability": "Level 2 Capability",
+			"Level 2 Capability": "Level 3 Capability",
+			"Level 3 Capability": "Level 4 Capability",
+			"Level 4 Capability": "Level 5 Capability",
+			"Level 0 Capability Group": "Level 1 Capability"
+		}
+	}
+}

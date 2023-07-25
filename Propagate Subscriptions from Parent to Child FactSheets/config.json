@@ -1,0 +1,133 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "1. Copy Subscriptions of Parents to variables",
+			"processorDescription": "Collect all subscriptions infor a variable. The var still contains all target relations to be split in a second step",
+			"type": "Application",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [
+							"8de51ff7-6f13-47df-8af8-9132ada2e74d"
+						],
+						"facetFilters": []
+					},
+					"filter": "${true}",
+					"multipleMatchesAllowed": true
+				}
+			},
+			"run": 0,
+			"variables": [
+				{
+					"key": "collectedChild_${integration.variables.valueOfForEach.target.id}",
+					"value": "${integration.toJson(lx.subscriptions)}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				},
+				{
+					"key": "collectedSubscriptions",
+					"value": "${lx.factsheet.id}_${integration.variables.indexOfForEach}_${integration.toJson(lx.relations)}",
+					"forEach": {
+						"elementOf": "${lx.subscriptions}"
+					}
+				}
+			],
+			"read": {
+				"relations": {
+					"filter": [
+						"relToChild"
+					]
+				},
+				"subscriptions": {
+					"types": [
+						"RESPONSIBLE"
+					]
+				}
+			},
+			"readOnly": true
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "2. Flatten Subscriptions to Children",
+			"processorDescription": "We take the var collectedSubscriptions and create a new var while flattening the clild relation object still inside each value to have one flat list of all subscriptions for all children",
+			"type": "Application",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"run": 1,
+			"forEach": "${variables.collectedSubscriptions}",
+			"variables": [
+				{
+					"key": "collectedChildren",
+					"value": "${integration.variables.valueOfForEach.target.id}_${integration.valueOfForEach.split('_')[1]}",
+					"forEach": {
+						"elementOf": "${integration.toObject(integration.valueOfForEach.split('_')[2])}"
+					}
+				}
+			],
+			"readOnly": true
+		},
+		{
+			"processorType": "inboundSubscription",
+			"processorName": "3. Write subscriptions from variables",
+			"processorDescription": "Iterate over variables and create subscriptions",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"run": 2,
+			"updates": [
+				{
+					"key": {
+						"expr": "user"
+					},
+					"values": [
+						{
+							"expr": "${integration.toObject(variables['collectedChild_'.concat(integration.valueOfForEach.split('_')[0])].get())[integration.valueOfForEach.split('_')[1]].user.email}"
+						}
+					]
+				},
+				{
+					"key": {
+						"expr": "subscriptionType"
+					},
+					"values": [
+						{
+							"expr": "RESPONSIBLE"
+						}
+					]
+				},
+				{
+					"key": {
+						"expr": "addSubscriptionRoles"
+					},
+					"values": [
+						{
+							"forEach": {
+								"elementOf": "${integration.toObject(variables['collectedChild_'.concat(integration.valueOfForEach.split('_')[0])].get())[integration.valueOfForEach.split('_')[1]].roles}"
+							},
+							"map": [
+								{
+									"key": "roleName",
+									"value": "${integration.output.valueOfForEach.name}"
+								}
+							]
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"forEach": "${variables.collectedChildren}"
+		}
+	]
+}
