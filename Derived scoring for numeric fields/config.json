@@ -1,0 +1,118 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "1. Gather scores and store in variables",
+			"processorDescription": "Gather Scores and Store in Variables",
+			"type": "Application",
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"Application"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							}
+						]
+					}
+				}
+			},
+			"run": 0,
+			"enabled": true,
+			"variables": [
+				{
+					"key": "${lx.factsheet.id.concat('_TotalRiskScore')}",
+					"value": "${helper:toList(lx.factsheet.InfrastructureRiskScore,lx.factsheet.ApplicationOperationalRiskScore)}"
+				}
+			],
+			"read": {
+				"fields": [
+					"InfrastructureRiskScore",
+					"ApplicationOperationalRiskScore"
+				]
+			}
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "2. Write total risk score",
+			"processorDescription": "Gather Scores and Store in Variables",
+			"type": "Application",
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"Application"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							}
+						]
+					}
+				}
+			},
+			"run": 1,
+			"updates": [
+				{
+					"key": {
+						"expr": "TotalRiskScore"
+					},
+					"values": [
+						{
+							"expr": "${variables[lx.factsheet.id.concat('_TotalRiskScore')].getNumbers().sum() != 0 ? variables[lx.factsheet.id.concat('_TotalRiskScore')].getNumbers().sum() : null }"
+						}
+					]
+				}
+			],
+			"enabled": true
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "3. Write Risk Tier",
+			"processorDescription": "Assign Risk Tier based on Total Risk Score",
+			"type": "Application",
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"Application"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							}
+						]
+					}
+				}
+			},
+			"run": 2,
+			"updates": [
+				{
+					"key": {
+						"expr": "RiskTier"
+					},
+					"values": [
+						{
+							"expr": "${ lx.factsheet.TotalRiskScore < 10 ? 'Green' : lx.factsheet.TotalRiskScore < 17 ? 'Yellow' : lx.factsheet.TotalRiskScore < 24 ? 'Orange' : lx.factsheet.TotalRiskScore > 23 ? 'Red' : null}"
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"read": {
+				"fields": [
+					"TotalRiskScore"
+				]
+			}
+		}
+	],
+	"variables": {}
+}

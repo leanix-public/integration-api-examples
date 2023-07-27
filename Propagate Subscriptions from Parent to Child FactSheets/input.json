@@ -1,0 +1,17 @@
+{
+	"connectorType": "CopySubscriptions",
+	"connectorId": "CopySubscriptions",
+	"connectorVersion": "1.0.0",
+	"lxVersion": "1.0.0",
+	"description": "",
+	"processingDirection": "inbound",
+	"processingMode": "partial",
+	"customFields": {},
+	"content": [
+		{
+			"type": "",
+			"id": "",
+			"data": {}
+		}
+	]
+}
