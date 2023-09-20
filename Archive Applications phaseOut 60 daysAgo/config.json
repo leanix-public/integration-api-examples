@@ -1,0 +1,39 @@
+{
+	"deletionScope": {
+		"factSheets": [
+			{
+				"scope": {
+					"ids": [],
+					"facetFilters": [
+						{
+							"keys": [
+								"Application"
+							],
+							"facetKey": "FactSheetTypes",
+							"operator": "OR"
+						},
+						{
+							"keys": [
+								"phaseOut"
+							],
+							"facetKey": "lifecycle",
+							"operator": "OR",
+							"dateFilter": {
+								"to": "2021-05-25",
+								"from": "2021-05-25",
+								"type": "TODAY",
+								"maxDate": "2020-11-01",
+								"minDate": "2020-11-01"
+							}
+						}
+					]
+				},
+                "advanced":"${helper:localDateTimeFromString(lx.factsheet.lifecycle.phaseOut.concat('T00:00:00Z')).isBefore(integration.now.minusDays(2))}"
+			}
+		],
+		"maximumDeletionRatio": {
+			"factSheets": 100
+		}
+	},
+	"processors": []
+}
