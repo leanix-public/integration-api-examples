@@ -1,0 +1,11 @@
+{
+    "connectorType": "DeleteResources",
+    "connectorId": "DeleteResources",
+    "connectorVersion": "1.0.0",
+    "lxVersion": "1.0.0",
+    "description": "",
+    "processingDirection": "inbound",
+    "processingMode": "full",
+    "customFields": {},
+    "content": []
+}

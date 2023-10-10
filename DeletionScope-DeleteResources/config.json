@@ -1,0 +1,27 @@
+{
+	"deletionScope": {
+		"documents": [
+			{
+				"documentMatches": [
+					".*"
+				],
+				"scope": {
+					"ids": ["FactSheetId"],
+					"facetFilters": [
+						{
+							"keys": [
+								"Application"
+							],
+							"facetKey": "FactSheetTypes",
+							"operator": "OR"
+						}
+					]
+				},
+				"advanced": "${lx.document.name.contains('ResourceName')}"
+			}
+		],
+		"maximumDeletionRatio": {}
+	},
+	"processors": [],
+	"variables": {}
+}
