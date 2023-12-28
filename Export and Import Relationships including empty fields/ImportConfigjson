@@ -1,0 +1,96 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "Add naFields to ITComponent",
+			"processorDescription": "Add naFields to ITComponent",
+			"type": "ITComponent",
+			"filter": {
+				"advanced": "${data.naFields != null && data.naFields != '[]'}"
+			},
+			"identifier": {
+				"internal": "${content.id}"
+			},
+			"run": 0,
+			"updates": [
+				{
+					"key": {
+						"expr": "naFields"
+					},
+					"values": [
+						{
+							"expr": "${integration.output.valueOfForEach}",
+							"forEach": {
+								"elementOf": "${data.naFields}",
+								"filter": "${true}"
+							}
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"logLevel": "warning"
+		},
+		{
+			"processorType": "inboundRelation",
+			"processorName": "requiresRelation",
+			"processorDescription": "Creates LeanIX Relations and data on relations between the factsheets",
+			"type": "relToRequires",
+			"filter": {
+				"advanced": "${integration.valueOfForEach.object.type.equals(\"relToRequires\")}"
+			},
+			"from": {
+				"internal": "${content.id}"
+			},
+			"to": {
+				"internal": "${integration.valueOfForEach.object.target.id}"
+			},
+			"run": 1,
+			"updates": [
+				{
+					"key": {
+						"expr": "description"
+					},
+					"values": [
+						{
+							"expr": "${integration.valueOfForEach.object.description}"
+						}
+					]
+				}
+			],
+			"forEach": "${data.relations}",
+			"logLevel": "warning"
+		},
+		{
+			"processorType": "inboundRelation",
+			"processorName": "requiredByRelation",
+			"processorDescription": "Creates LeanIX Relations and data on relations between the factsheets",
+			"type": "relToRequiredBy",
+			"filter": {
+				"advanced": "${integration.valueOfForEach.object.type.equals(\"relToRequiredBy\")}"
+			},
+			"from": {
+				"internal": "${content.id}"
+			},
+			"to": {
+				"internal": "${integration.valueOfForEach.object.target.id}"
+			},
+			"run": 1,
+			"updates": [
+				{
+					"key": {
+						"expr": "description"
+					},
+					"values": [
+						{
+							"expr": "${integration.valueOfForEach.object.description}"
+						}
+					]
+				}
+			],
+			"forEach": "${data.relations}",
+			"logLevel": "warning"
+		}
+	],
+	"variables": {}
+}

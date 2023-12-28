@@ -1,0 +1,113 @@
+{
+    "scope": {
+        "ids": [],
+        "facetFilters": [
+            {
+                "keys": [
+                    "ITComponent"
+                ],
+                "facetKey": "FactSheetTypes",
+                "operator": "OR"
+            }
+        ]
+    },
+    "processors": [
+        {
+            "processorType": "outboundFactSheet",
+            "processorName": "Export to LDIF",
+            "processorDescription": "This is an example how to use the outboundFactSheet processor",
+            "enabled": true,
+            "fields": [
+                "naFields",
+                "displayName",
+                "id"
+            ],
+            "relations": {
+                "filter": [
+                    "relToRequires",
+                    "relToRequiredBy"
+                ],
+                "fields": [
+                    "description"
+                ],
+                "targetFields": [
+                    "id"
+                ]
+            },
+            "output": [
+                {
+                    "key": {
+                        "expr": "content.id"
+                    },
+                    "mode": "selectFirst",
+                    "values": [
+                        {
+                            "expr": "${lx.factsheet.id}"
+                        }
+                    ]
+                },
+                {
+                    "key": {
+                        "expr": "content.type"
+                    },
+                    "mode": "selectFirst",
+                    "values": [
+                        {
+                            "expr": "${lx.factsheet.type}"
+                        }
+                    ]
+                },
+                {
+                    "key": {
+                        "expr": "displayName"
+                    },
+                    "mode": "selectFirst",
+                    "values": [
+                        {
+                            "expr": "${lx.factsheet.displayName}"
+                        }
+                    ]
+                },
+                {
+                    "key": {
+                        "expr": "relations"
+                    },
+                    "mode": "list",
+                    "values": [
+                        {
+                            "forEach": {
+                                "elementOf": "${lx.relations}",
+                                "filter": "${true}"
+                            },
+                            "map": [
+                                {
+                                    "key": "relationName",
+                                    "value": "${integration.output.valueOfForEach.type}"
+                                },
+                                {
+                                    "key": "object",
+                                    "value": "${integration.output.valueOfForEach}"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "key": {
+                        "expr": "naFields"
+                    },
+                    "mode": "list",
+                    "values": [
+                        {
+                            "expr": "${integration.output.valueOfForEach}",
+                            "forEach": {
+                                "elementOf": "${lx.factsheet.naFields}",
+                                "filter": "${true}"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
