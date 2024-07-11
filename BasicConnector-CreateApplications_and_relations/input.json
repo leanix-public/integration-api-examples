@@ -1,0 +1,22 @@
+{
+    "connectorType": "Basic-ImportApplications",
+    "connectorId": "ImportApplications",
+    "connectorVersion": "1.0.0",
+    "lxVersion": "1.0.0",
+    "description": "",
+    "processingDirection": "inbound",
+    "processingMode": "full",
+    "customFields": {},
+    "content": [
+        {
+            "id": "APP-0001",
+            "type": "Application",
+            "data": [
+                {
+                    "name": "Test Application",
+                    "description": "Application description"
+                }
+            ]
+        }
+    ]
+}
