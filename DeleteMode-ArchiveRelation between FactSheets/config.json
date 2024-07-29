@@ -1,0 +1,22 @@
+{
+    "processors": [
+        {
+            "processorType": "inboundRelation",
+            "processorName": "Delete Rel from Apps to ITComponent",
+            "processorDescription":"Delete a relationship by providing LeanIX ID for the From and To FactSheets",
+            "type": "relApplicationToITComponent",
+            "filter": {
+                "exactType": "Deployment"
+            },
+            "from": {
+                "internal": "${content.id}"
+            },
+            "to": {
+                "internal": "${content.id}"
+            },
+            "run": 1,
+            "updates": [],
+            "mode": "delete"
+        }
+    ]
+}

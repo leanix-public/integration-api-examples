@@ -1,0 +1,17 @@
+{
+    "connectorType": "example",
+    "connectorId": "relationDeleteMode",
+    "connectorVersion": "1.0.0",
+    "lxVersion": "1.0.0",
+    "processingDirection": "inbound",
+    "processingMode": "partial",
+    "content": [
+        {
+            "type": "Deployment",
+            "id": "adb46dda-7a17-4691-8628-9e6f2dca9356",
+            "data": {
+                "itcomponentId": "16d37ed2-e99e-4d23-b4cb-4a72b2471774"
+            }
+        }
+    ]
+}
