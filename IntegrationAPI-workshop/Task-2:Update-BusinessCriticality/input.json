@@ -1,0 +1,21 @@
+{
+	"connectorType": "Basic-ImportApplications",
+	"connectorId": "ImportApplications",
+	"connectorVersion": "1.0.0",
+	"lxVersion": "1.0.0",
+	"description": "",
+	"processingDirection": "inbound",
+	"processingMode": "full",
+	"customFields": {},
+	"content": [
+		{
+			"type": "Application",
+			"id": "APP-0001",
+			"data": {
+				"name": "Test Application",
+				"description": "Application description",
+				"businessCriticality": "1-Critical"
+			}
+		}
+	]
+}

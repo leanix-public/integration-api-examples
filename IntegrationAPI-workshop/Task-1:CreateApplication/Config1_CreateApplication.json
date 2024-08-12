@@ -1,0 +1,39 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "Create Application",
+			"processorDescription": "Creates LeanIX Applications",
+			"type": "Application",
+			"filter": {
+				"type": "Application"
+			},
+			"identifier": {
+				"external": {
+					"id": {
+						"expr": "${content.id}"
+					},
+					"type": {
+						"expr": "externalId"
+					}
+				}
+			},
+			"run": 0,
+			"updates": [
+				{
+					"key": {
+						"expr": "name"
+					},
+					"values": [
+						{
+							"expr": "${data.name}"
+						}
+					]
+				}
+			],
+			"enabled": true,
+			"variables": [],
+			"logLevel": "warning"
+		}
+	]
+}
