@@ -8,7 +8,7 @@
 	"processingMode": "full",
 	"customFields": {
 		"criticality_map": {
-			"0-NonCritica": "administrativeService",
+			"0-NonCritical": "administrativeService",
 			"3-Low": "businessOperational",
 			"2-High": "businessCritical",
 			"1-Critical": "missionCritical"
