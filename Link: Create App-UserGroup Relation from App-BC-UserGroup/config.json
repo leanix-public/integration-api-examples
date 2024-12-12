@@ -1,0 +1,161 @@
+{
+	"processors": [
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "STEP 1: Read Applications and get List of Applications per BCs",
+			"processorDescription": "",
+			"type": "Application",
+			"filter": {},
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"Application"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							},
+							{
+								"keys": [
+									"__missing__"
+								],
+								"facetKey": "relApplicationToBusinessCapability",
+								"operator": "NOR"
+							}
+						]
+					},
+					"filter": "${true}",
+					"multipleMatchesAllowed": true
+				}
+			},
+			"run": 0,
+			"updates": [],
+			"variables": [
+				{
+					"key": "AppBCList",
+					"value": "${lx.factsheet.id}_${integration.variables.valueOfForEach.target.id}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				},
+				{
+					"key": "appList",
+					"value": "${lx.factsheet.name}_${lx.factsheet.id}"
+				}
+			],
+			"logLevel": "debug",
+			"read": {
+				"fields": [
+					"name"
+				],
+				"relations": {
+					"filter": [
+						"relApplicationToBusinessCapability"
+					],
+					"fields": [],
+					"targetFields": []
+				}
+			}
+		},
+		{
+			"processorType": "inboundFactSheet",
+			"processorName": "STEP 2: Read User Group Info and map to Apps",
+			"processorDescription": "",
+			"type": "UserGroup",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"identifier": {
+				"search": {
+					"scope": {
+						"ids": [],
+						"facetFilters": [
+							{
+								"keys": [
+									"UserGroup"
+								],
+								"facetKey": "FactSheetTypes",
+								"operator": "OR"
+							},
+							{
+								"keys": [
+									"__missing__"
+								],
+								"facetKey": "relUserGroupToBusinessCapability",
+								"operator": "NOR"
+							}
+						]
+					},
+					"filter": "${true}",
+					"multipleMatchesAllowed": true
+				}
+			},
+			"run": 1,
+			"updates": [],
+			"variables": [
+				{
+					"key": "BCUGList_${integration.variables.valueOfForEach.target.id}",
+					"value": "${lx.factsheet.id}",
+					"forEach": {
+						"elementOf": "${lx.relations}"
+					}
+				}
+			],
+			"logLevel": "debug",
+			"read": {
+				"relations": {
+					"filter": [
+						"relUserGroupToBusinessCapability"
+					],
+					"fields": [],
+					"targetFields": []
+				}
+			},
+			"readOnly": false
+		},
+		{
+			"processorType": "variableProcessor",
+			"processorName": "STEP 3: Processor to map Applications to UGs",
+			"processorDescription": "",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"run": 2,
+			"enabled": true,
+			"forEach": "${variables.AppBCList}",
+			"variables": [
+				{
+					"key": "relationsToBeCreated",
+					"value": "${integration.valueOfForEach.split('_')[0]}_${integration.variables.valueOfForEach}",
+					"forEach": {
+						"elementOf": "${variables['BCUGList_'.concat(integration.valueOfForEach.split('_')[1])].distinct()}"
+					}
+				}
+			],
+			"logLevel": "debug"
+		},
+		{
+			"processorType": "inboundRelation",
+			"processorName": "STEP 4:Rel from Apps to UserGroup",
+			"processorDescription": "Map the retrieved Applications to Business Capability on the basis of the variable 'relationsToBeCreated'",
+			"type": "relApplicationToUserGroup",
+			"filter": {
+				"advanced": "${integration.contentIndex==0}"
+			},
+			"from": {
+				"internal": "${integration.valueOfForEach.split('_')[0]}"
+			},
+			"to": {
+				"internal": "${integration.valueOfForEach.split('_')[1]}"
+			},
+			"run": 3,
+			"updates": [],
+			"forEach": "${variables.relationsToBeCreated}",
+			"logLevel": "debug"
+		}
+	],
+	"variables": {}
+}
